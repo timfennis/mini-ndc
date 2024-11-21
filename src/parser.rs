@@ -107,7 +107,7 @@ where
         while let Some(Token::Star | Token::ForwardSlash) = self.tokens.peek() {
             let operator = Operator::try_from(self.tokens.next().unwrap())?;
 
-            let right = self.factor()?;
+            let right = self.unary()?;
 
             expression = Expression::Binary {
                 left: Box::new(expression),
@@ -120,7 +120,6 @@ where
     }
     fn unary(&mut self) -> anyhow::Result<Expression> {
         if let Some(Token::Minus) = self.tokens.peek() {
-            // SAFE: Unwrap is guaranteed to success by the previous call to peek
             let operator = Operator::try_from(self.tokens.next().unwrap())?;
             let right = self.unary()?;
             return Ok(Expression::Unary {
